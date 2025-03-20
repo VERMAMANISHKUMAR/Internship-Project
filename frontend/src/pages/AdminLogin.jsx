@@ -65,7 +65,7 @@ const AdminLogin = () => {
     try {
       // Make sure withCredentials is set to true
       const res = await axios.post(
-        "http://localhost:5000/auth/login",
+        "https://internship-project-backend-zjk9.onrender.com/auth/login",
         admin,
         { withCredentials: true }
       );
