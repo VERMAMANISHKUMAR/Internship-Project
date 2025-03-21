@@ -19,7 +19,8 @@ const CustomerOrders = () => {
       setError("");
 
       // Make API request to backend
-      const response = await axios.get("http://localhost:5000/api/orders", {
+      //http://localhost:5000/api/orders
+      const response = await axios.get("https://internship-project-backend-zjk9.onrender.com/api/orders", {
         params: {
           customerName: customerName || undefined,
           tillDate: tillDate || undefined,
