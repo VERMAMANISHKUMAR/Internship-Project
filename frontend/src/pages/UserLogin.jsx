@@ -15,7 +15,7 @@ const UserLogin = () => {
     e.preventDefault();
     try {
       const res = await axios.post(
-        "https://internship-project-backend-zjk9.onrender.com/admiaddinguser/userlogin",
+        "https://placement-cell-mern-backend.onrender.com/admiaddinguser/userlogin",
         user,
         { withCredentials: true }
       );
