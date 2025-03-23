@@ -15,7 +15,7 @@ const UserLogin = () => {
     e.preventDefault();
     try {
       const res = await axios.post(
-        "https://placement-cell-mern-backend.onrender.com/admiaddinguser/userlogin",
+        "http://192.168.1.13:5000/admiaddinguser/userlogin",
         user,
         { withCredentials: true }
       );
