@@ -1,54 +1,73 @@
-
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 
 const AdminLogin = () => {
   const [admin, setAdmin] = useState({ email: "", password: "" });
+  const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
+  // Handle Input Change
   const handleChange = (e) => {
     setAdmin({ ...admin, [e.target.name]: e.target.value });
   };
 
+  // Handle Form Submission
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    // Input Validation
+    if (!admin.email || !admin.password) {
+      alert("Both email and password are required.");
+      return;
+    }
+
+    // Email Format Validation
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(admin.email)) {
+      alert("Please enter a valid email address.");
+      return;
+    }
+
     try {
-      // Make sure withCredentials is set to true
-      //http://localhost:5000/auth/login
+      setLoading(true);
+      console.log("Logging in with:", admin); // Debugging
+
       const res = await axios.post(
         "https://placement-cell-mern-backend.onrender.com/auth/login",
         admin,
         { withCredentials: true }
       );
 
+      console.log("Login Success:", res.data); // Debugging
+
       // Store token, role, and permissions in localStorage
-      // Store token, role, and permissions in localStorage
-localStorage.setItem("token", res.data.token);
-localStorage.setItem("role", res.data.role);
+      localStorage.setItem("token", res.data.token);
+      localStorage.setItem("role", res.data.role);
 
-// Ensure admin gets full permissions if backend doesn't send them
-const defaultAdminPermissions = [
-  "manageUsers",
-  "viewStores",
-  "viewReports",
-  "sendMessages",
-  "addStore",
-  "editStore",
-  "VIEW_ROLES" // Add this permission
-];
+      // Default Admin Permissions (if not provided by backend)
+      const defaultAdminPermissions = [
+        "manageUsers",
+        "viewStores",
+        "viewReports",
+        "sendMessages",
+        "addStore",
+        "editStore",
+        "VIEW_ROLES"
+      ];
 
-localStorage.setItem(
-  "permissions",
-  JSON.stringify(res.data.permissions || (res.data.role === "admin" ? defaultAdminPermissions : []))
-);
-
-
+      localStorage.setItem(
+        "permissions",
+        JSON.stringify(res.data.permissions || (res.data.role === "admin" ? defaultAdminPermissions : []))
+      );
 
       alert("Login successful!");
       navigate("/dashboard");
     } catch (err) {
-      alert("Login failed. Check your credentials.");
+      console.error("Login Error:", err.response?.data || err.message);
+      alert(err.response?.data?.message || "Login failed. Check your credentials.");
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -59,33 +78,43 @@ localStorage.setItem(
           Admin Login
         </h2>
         <form onSubmit={handleSubmit}>
+          {/* Email Input */}
           <div className="mb-4">
             <input
               type="email"
               name="email"
               placeholder="Email"
+              value={admin.email}
               onChange={handleChange}
               required
               className="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
           </div>
+
+          {/* Password Input */}
           <div className="mb-6">
             <input
               type="password"
               name="password"
               placeholder="Password"
+              value={admin.password}
               onChange={handleChange}
               required
               className="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
           </div>
+
+          {/* Submit Button */}
           <button
             type="submit"
             className="w-full py-3 bg-blue-500 text-white font-semibold rounded-md hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500"
+            disabled={loading}
           >
-            Login
+            {loading ? "Logging in..." : "Login"}
           </button>
         </form>
+
+        {/* Register & User Login Links */}
         <div className="mt-4 text-center">
           <button
             onClick={() => navigate("/admin-register")}
